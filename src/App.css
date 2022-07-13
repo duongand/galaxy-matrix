@@ -4,3 +4,84 @@
   box-sizing: border-box;
   font-family: sans-serif;
 }
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-image: url("../public/brett-richie-galaxy-background.jpg");
+  background-size: cover;
+}
+
+.content-wrap {
+  border: 1px solid #eedb00;
+  background-color: black;
+  color: #eedb00;
+  margin-top: 10vh;
+
+  height: 75vh;
+  width: 75vw;
+}
+
+.header-wrap {
+  border: 1px solid #eedb00;
+  background-color: black;
+  color: white;
+
+  height: 50px;
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
+}
+
+.search-bar {
+  display: flex;
+}
+
+.search-button {
+  margin-left: 5px;
+}
+
+.content-wrap {
+  border-radius: 5px;
+}
+
+.header--title {
+  margin: 5px 5px;
+  margin-right: auto;
+  font-family: "Open Sans", sans-serif;
+  font-family: "Poller One", cursive;
+}
+
+.table-wrap {
+  width: 100%;
+  height: calc(75vh - 50px);
+  overflow: auto;
+}
+
+tr,
+td {
+  color: white;
+}
+
+.navigation-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.page-buttons {
+  margin: 5px;
+  height: 40px;
+  width: 40px;
+
+  border: 2px solid #eedb00;
+  background-color: black;
+  color: white;
+  border-radius: 5px;
+}
+
+.page-buttons:hover {
+  opacity: 50%;
+}
