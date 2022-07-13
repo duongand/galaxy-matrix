@@ -2,7 +2,7 @@
 
 `galaxy-matrix` is an application to display information regarding the characters in the Star Wars galaxy. This is an easy introduction working with a REST API in making a request, working with the data, and incorporating it into a React app.
 
-[Live Demo](https://react-budget-buddy.herokuapp.com/)
+[Live Demo](https://react-in-a-land-far-away.herokuapp.com/)
 
 ![demo-screenshot](./demo-screenshot.png)
 
