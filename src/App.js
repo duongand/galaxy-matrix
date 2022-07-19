@@ -17,7 +17,7 @@ function App() {
 		async function getCharacters() {
 			const BASE_URL = 'https://swapi.dev/api/';
 			const characterURLS = createURLS(BASE_URL, 'people', 10);
-			const planetURLS = createURLS(BASE_URL, 'planets', 6);
+			const planetURLS = createURLS(BASE_URL, 'planets', 7);
 			const specieURLS = createURLS(BASE_URL, 'species', 4);
 	
 			const characterPromises = generatePromises(characterURLS);
@@ -27,14 +27,17 @@ function App() {
 			const tempCharacters = (await Promise.all(characterPromises)).flat();
 			let planets = (await Promise.all(planetPromises)).flat();
 			let species = (await Promise.all(speciePromises)).flat();
-	
+
 			planets = convertArrayToDict(planets, 'url', 'name');
 			species = convertArrayToDict(species, 'url', 'name');
+
+			console.log(planets);
+			console.log(species);
 	
 			for (const character of tempCharacters) {
 				character.homeworld = planets[character.homeworld];
-				character.species = (character.species.length === 0 ?
-					'Human' : species[character.species[0]]);
+				character.species = (character.species ?
+					species[character.species[0]] : 'Human');
 			};
 	
 			setCharacters(tempCharacters);
