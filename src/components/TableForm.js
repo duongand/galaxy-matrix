@@ -1,31 +1,26 @@
 import React from 'react';
 import { Form, FormControl } from 'react-bootstrap';
 
-function TableHeader(props) {
+function TableForm({ searchBar, onChange, onSubmit }) {
     function handleChange(event) {
-        props.onChange(event);
-    };
-
-    function handleSubmit(event) {
-        event.preventDefault();
-        props.onSubmit();
+        onChange(event);
     };
 
     return (
-        <header className="header-wrap">
+        <div className="header-wrap">
             <h2 className="header--title">In a land far away...</h2>
 
-            <Form className="search-bar" onSubmit={handleSubmit}>
+            <Form className="search-bar" onSubmit={onSubmit}>
                 <FormControl
                     name="name"
                     type="text"
                     placeholder="search character..."
                     onChange={handleChange}
-                    value={props.searchBar.name}
+                    value={searchBar.name}
                 />
             </Form>
-        </header>
+        </div>
     );
 };
 
-export default TableHeader;
+export default TableForm;

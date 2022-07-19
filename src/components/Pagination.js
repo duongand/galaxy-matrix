@@ -1,17 +1,13 @@
 import React from 'react';
 
-function PageNavigation(props) {
-    function changePage(event) {
-        props.onClick(event);
-    };
-
+function Pagination({ numberOfCharacters, onClick }) {
     const pageButtons = [];
-    for (let i = 1; i <= props.maxPages; i++) {
+    for (let i = 1; i <= Math.ceil(numberOfCharacters / 10); i++) {
         pageButtons.push((
             <button
                 key={i}
                 className="page-buttons"
-                onClick={changePage}
+                onClick={onClick}
                 value={i}
             >
                 {i}
@@ -26,4 +22,4 @@ function PageNavigation(props) {
     );
 };
 
-export default PageNavigation;
+export default Pagination;

@@ -1,15 +1,15 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
-function CharacterDashboard(props) {
-    const characterTableElements = props.characters.map((character) => (
+function CharacterTable({ characters }) {
+    const characterTableElements = characters.map((character) => (
         <tr key={character.name}>
             <td>{character.name}</td>
             <td>{character.birth_year}</td>
             <td>{character.height}</td>
             <td>{character.mass}</td>
-            <td>{props.homeworld[character.homeworld]}</td>
-            <td>{props.species[character.species]}</td>
+            <td>{character.homeworld}</td>
+            <td>{character.species}</td>
         </tr>
     ));
 
@@ -34,4 +34,4 @@ function CharacterDashboard(props) {
     );
 };
 
-export default CharacterDashboard;
+export default CharacterTable;

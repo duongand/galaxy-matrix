@@ -1,68 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import axios from 'axios';
-import TableHeader from './components/TableHeader';
-import CharacterDashboard from './components/CharacterDashboard';
-import PageNavigation from './components/PageNavigation';
+import TableForm from './components/TableForm';
+import CharacterTable from './components/CharacterTable';
+import Pagination from './components/Pagination';
 
 function App() {
+	const [characters, setCharacters] = useState([]);
 	const [currentCharacters, setCurrentCharacters] = useState([]);
-	const [species, setSpecies] = useState({});
-	const [homeworld, setHomeworld] = useState({});
-	const [page, setPage] = useState();
-	const [maxPages, setMaxPages] = useState();
+	const [page, setPage] = useState(1);
 	const [searchBar, setSearchBar] = useState({
 		name: ''
 	});
-
-	async function getPlanets(nextPage) {
-		const response = await axios.get(nextPage);
-
-		for (const planet of response.data.results) {
-			setHomeworld((prevHomeworld) => ({
-				...prevHomeworld,
-				[planet.url]: planet.name
-			}));
-		};
-
-		if (response.data.next !== null) {
-			getPlanets(response.data.next);
-		};
-	};
-
-	async function getSpecies(nextPage) {
-		const response = await axios.get(nextPage);
-
-		for (const specie of response.data.results) {
-			setSpecies((prevSpecies) => ({
-				...prevSpecies,
-				[specie.url]: specie.name
-			}));
-		};
-
-		if (response.data.next !== null) {
-			getSpecies(response.data.next);
-		};
-	};
+	const [searchedCharacter, setSearchedCharacter] = useState('');
 
 	useEffect(() => {
-		Promise.all([
-			getPlanets('https://swapi.dev/api/planets/'),
-			getSpecies('https://swapi.dev/api/species/')
-		]);
-	}, [])
+		async function getCharacters() {
+			const BASE_URL = 'https://swapi.dev/api/';
+			const characterURLS = createURLS(BASE_URL, 'people', 10);
+			const planetURLS = createURLS(BASE_URL, 'planets', 6);
+			const specieURLS = createURLS(BASE_URL, 'species', 4);
+	
+			const characterPromises = generatePromises(characterURLS);
+			const planetPromises = generatePromises(planetURLS);
+			const speciePromises = generatePromises(specieURLS);
+	
+			const tempCharacters = (await Promise.all(characterPromises)).flat();
+			let planets = (await Promise.all(planetPromises)).flat();
+			let species = (await Promise.all(speciePromises)).flat();
+	
+			planets = convertArrayToDict(planets, 'url', 'name');
+			species = convertArrayToDict(species, 'url', 'name');
+	
+			for (const character of tempCharacters) {
+				character.homeworld = planets[character.homeworld];
+				character.species = (character.species.length === 0 ?
+					'Human' : species[character.species[0]]);
+			};
+	
+			setCharacters(tempCharacters);
+			setCurrentCharacters(tempCharacters.slice(0, 10));
+		}
+
+		getCharacters();
+	}, [setCharacters])
 
 	useEffect(() => {
-		axios.get('https://swapi.dev/api/people', {
-			params: {
-				page: page
-			}
-		}).then((res) => {
-			setCurrentCharacters(res.data.results);
-			setPage(page);
-			setMaxPages(Math.ceil(res.data.count / 10));
+		if (searchBar.name === '') {
+			setCurrentCharacters(characters);
+			setPage('1');
+		};
+
+		const filteredCharacters = characters.filter(character => {
+			return character.name.toUpperCase() === searchBar.name.toUpperCase()
 		});
-	}, [page]);
+
+		if (filteredCharacters.length > 0) {
+			setCurrentCharacters(filteredCharacters);
+		};
+	}, [searchedCharacter])
+
+	useEffect(() => {
+		const maxIndex = page * 10;
+		setCurrentCharacters(characters.slice(maxIndex - 10, maxIndex));
+	}, [page])
 
 	function handleChange(event) {
 		const { name, value } = event.target;
@@ -76,41 +76,24 @@ function App() {
 		setPage(event.target.value);
 	};
 
-	function handleSubmit() {
-		axios.get('https://swapi.dev/api/people', {
-			params: {
-				search: searchBar.name
-			}
-		}).then((response) => {
-			const searchResults = response.data.results;
-			const newCharacters = [];
-
-			if (searchResults.length > 0) {
-				for (const result of searchResults) {
-					newCharacters.push(result);
-				};
-			};
-
-			setCurrentCharacters(newCharacters);
-		});
-
+	function handleSubmit(event) {
+		event.preventDefault();
+		setSearchedCharacter(searchBar);
 	};
 
 	return (
 		<div className="App">
 			<div className="content-wrap">
-				<TableHeader
+				<TableForm
 					searchBar={searchBar}
 					onChange={handleChange}
 					onSubmit={handleSubmit}
 				/>
-				<CharacterDashboard
+				<CharacterTable
 					characters={currentCharacters}
-					homeworld={homeworld}
-					species={species}
 				/>
-				<PageNavigation
-					maxPages={maxPages}
+				<Pagination
+					numberOfCharacters={characters.length}
 					onClick={changePage}
 				/>
 			</div>
@@ -119,3 +102,34 @@ function App() {
 }
 
 export default App;
+
+function createURLS(BASE_URL, ENDPOINT, RANGE) {
+	const urls = [];
+	for (let i = 1; i < RANGE; i++) {
+		urls.push(`${BASE_URL}${ENDPOINT}?page=${i}`);
+	};
+
+	return urls;
+};
+
+function generatePromises(urls) {
+	return urls.map((url) => (
+		fetch(url)
+		.then((response) => {
+			return response.json();
+		}).then((response) => {
+			return response.results;
+		}).catch((error) => {
+			console.log(error);
+		})
+	));
+};
+
+function convertArrayToDict(array, key, value) {
+	const temp = {};
+	for (const item of array) {
+		temp[item[key]] = item[value];
+	};
+
+	return temp;
+};
