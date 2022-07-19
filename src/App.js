@@ -18,7 +18,7 @@ function App() {
 			const BASE_URL = 'https://swapi.dev/api/';
 			const characterURLS = createURLS(BASE_URL, 'people', 10);
 			const planetURLS = createURLS(BASE_URL, 'planets', 7);
-			const specieURLS = createURLS(BASE_URL, 'species', 4);
+			const specieURLS = createURLS(BASE_URL, 'species', 5);
 	
 			const characterPromises = generatePromises(characterURLS);
 			const planetPromises = generatePromises(planetURLS);
@@ -36,7 +36,7 @@ function App() {
 	
 			for (const character of tempCharacters) {
 				character.homeworld = planets[character.homeworld];
-				character.species = (character.species ?
+				character.species = (character.species.length !== 0 ?
 					species[character.species[0]] : 'Human');
 			};
 	
@@ -60,12 +60,12 @@ function App() {
 		if (filteredCharacters.length > 0) {
 			setCurrentCharacters(filteredCharacters);
 		};
-	}, [searchedCharacter])
+	}, [searchedCharacter, characters, searchBar])
 
 	useEffect(() => {
 		const maxIndex = page * 10;
 		setCurrentCharacters(characters.slice(maxIndex - 10, maxIndex));
-	}, [page])
+	}, [page, characters])
 
 	function handleChange(event) {
 		const { name, value } = event.target;
